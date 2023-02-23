@@ -38,8 +38,8 @@ function detalle_usuario(i){
     //console.log("detalle  https://api.github.com/users/"+i); 
 }
 
-var seguidores="";
-var coma="";
+var seguidores=""; var pre_usuarios="";
+var coma=""; var coma2="";
 
 function seguidores_usuario(i){
   // https://api.github.com/users/YOUR_NAME
@@ -47,8 +47,13 @@ function seguidores_usuario(i){
      .then(response => response.json() )
      .then(json => { 
        f = json.followers;
-       seguidores+=coma+f;
+       seguidores += coma+f;
        coma=",";
+
+       u = i;
+       pre_usuarios += coma2+"'"+u+"'";
+       coma2=",";
+
     });
     //console.log("detalle  https://api.github.com/users/"+i); 
 }
@@ -61,12 +66,11 @@ const muestrauser = (nameuser) => {
         //seguidores="";
         respuesta.innerHTML += 
         `<div class="row">
-          <div class="col-1">
+          <div class="col-2">
             <a href="#" onclick="detalle_usuario('${users[i].login}')" class="" data-bs-toggle="modal" data-bs-target="#detalle_usuario">
             ${users[i].id}</a>
           </div>
           <div class="col">${users[i].login}</div>
-          <div class="col"></div>
         </div>`;
     }
     respuesta.innerHTML += `<br><a href="#" onclick="ver_grafica()">Ver Gráfica</a>`;
@@ -76,12 +80,16 @@ const muestrauser = (nameuser) => {
 }
 
 function ver_grafica(){
-  $.post("grafica.php",{ u_login:nameuser, seg:seguidores }, function(htmlexterno){
-    $("#chart").html(htmlexterno);
-    ///console.log(htmlexterno)
-  });
-  seguidores = [];
-  nameuser = "";  
+  if(seguidores!=""){  //  debe tenermas de 10 comas
+    $.post("grafica.php",{ u_login:nameuser, usuarios:pre_usuarios, seg:seguidores }, function(htmlexterno){
+      $("#chart").html(htmlexterno);
+      ///console.log(htmlexterno)
+    });
+    seguidores = [];
+    nameuser = "";  
+  } else {
+     console.log("Por favor espere");
+  }
 }
 
 
